@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmojiFlow — تعلّم البرمجة بالإيموجي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#060a10;--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-tertiary:#1c2333;--bg-elevated:#21283b;
+  --border-subtle:#1e2a3a;--border-default:#2a3a4e;--border-gold:rgba(201,168,76,0.25);
+  --text-primary:#e6edf3;--text-secondary:#9eafc0;--text-muted:#5a6e82;
+  --gold:#c9a84c;--gold-dim:#a08530;--gold-glow:rgba(201,168,76,0.12);--gold-strong:rgba(201,168,76,0.3);
+  --teal:#2ea7a0;--teal-dim:#1e7a75;--teal-glow:rgba(46,167,160,0.12);
+  --red:#f85149;--green:#3fb950;--yellow:#d29922;--blue:#58a6ff;
+  --font-ar:'Amiri','IBM Plex Sans Arabic',serif;
+  --font-body:'IBM Plex Sans','IBM Plex Sans Arabic',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+  --ease:cubic-bezier(0.4,0,0.2,1);
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);color:var(--text-primary);background:var(--bg-deep);
+  min-height:100vh;overflow-x:hidden;line-height:1.6;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit;background:var(--bg-tertiary);border:1px solid var(--border-default);border-radius:var(--radius-sm);padding:8px 12px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg-secondary)}
+::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* ══════ ISLAMIC GEOMETRIC PATTERN (SVG BG) ══════ */
+.geo-pattern{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 0L80 40L40 80L0 40Z' fill='none' stroke='%23c9a84c' stroke-width='0.5'/%3E%3Cpath d='M40 10L70 40L40 70L10 40Z' fill='none' stroke='%23c9a84c' stroke-width='0.3'/%3E%3Cpath d='M40 20L60 40L40 60L20 40Z' fill='none' stroke='%23c9a84c' stroke-width='0.3'/%3E%3C/svg%3E");
+  background-size:80px 80px;
+}
+
+/* ══════ BISMILLAH HEADER ══════ */
+.bismillah{
+  text-align:center;padding:14px 16px 10px;
+  font-family:var(--font-ar);font-size:clamp(1.1rem,2.5vw,1.5rem);
+  color:var(--gold);letter-spacing:1px;
+  background:linear-gradient(180deg,rgba(201,168,76,0.06) 0%,transparent 100%);
+  border-bottom:1px solid var(--border-gold);
+  position:relative;z-index:10;user-select:none;
+}
+.bismillah::before,.bismillah::after{
+  content:'✦';font-size:0.6em;vertical-align:middle;margin:0 12px;opacity:0.4;
+}
+
+/* ══════ MAIN HEADER / NAV ══════ */
+.app-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,17,23,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border-subtle);
+}
+.header-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px;gap:12px;
+}
+.app-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.15rem;white-space:nowrap}
+.app-logo .emoji{font-size:1.4em}
+.app-logo .text{background:linear-gradient(135deg,var(--gold),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* Level Selector */
+.level-selector{
+  display:flex;gap:4px;background:var(--bg-tertiary);border-radius:20px;padding:3px;
+}
+.level-btn{
+  padding:5px 10px;border-radius:18px;font-size:0.8rem;transition:all 0.25s var(--ease);
+  display:flex;align-items:center;gap:4px;white-space:nowrap;
+}
+.level-btn.active{background:var(--bg-elevated);box-shadow:0 0 8px var(--gold-glow)}
+.level-btn:hover{background:var(--bg-elevated)}
+
+/* Tab Navigation */
+.tab-nav{
+  display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  padding:0 12px;gap:2px;
+}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{
+  padding:10px 16px;font-size:0.85rem;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:all 0.25s var(--ease);
+  color:var(--text-secondary);display:flex;align-items:center;gap:6px;
+  position:relative;flex-shrink:0;
+}
+.tab-btn:hover{color:var(--text-primary);background:rgba(255,255,255,0.03)}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn .tab-emoji{font-size:1.1em}
+
+/* Hamburger */
+.hamburger{display:none;padding:8px;font-size:1.4rem}
+@media(max-width:640px){
+  .hamburger{display:block}
+  .tab-nav.collapsed{display:none}
+  .tab-nav.expanded{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--bg-secondary);border-bottom:1px solid var(--border-default);z-index:99;padding:8px}
+  .tab-nav.expanded .tab-btn{padding:12px 20px;border-bottom:none;border-left:2px solid transparent}
+  .tab-nav.expanded .tab-btn.active{border-left-color:var(--gold);background:var(--gold-glow)}
+}
+
+/* ══════ MAIN CONTENT AREA ══════ */
+.app-main{
+  position:relative;z-index:1;max-width:1400px;margin:0 auto;
+  padding:16px;min-height:calc(100vh - 160px);
+}
+.tab-panel{display:none;animation:fadeIn 0.3s var(--ease)}
+.tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════ CODING TAB LAYOUT ══════ */
+.coding-layout{display:grid;grid-template-columns:240px 1fr 280px;gap:12px;height:calc(100vh - 200px);min-height:500px}
+@media(max-width:1024px){.coding-layout{grid-template-columns:200px 1fr;}.log-panel-container{grid-column:1/-1;height:200px}}
+@media(max-width:640px){.coding-layout{grid-template-columns:1fr;height:auto}.palette-sidebar{max-height:200px}}
+
+/* Palette Sidebar */
+.palette-sidebar{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.palette-header{padding:10px 12px;border-bottom:1px solid var(--border-subtle);font-weight:600;font-size:0.85rem;display:flex;align-items:center;gap:6px}
+.palette-search{margin:8px;padding:6px 10px;font-size:0.8rem;border-radius:20px}
+.palette-categories{overflow-y:auto;flex:1;padding:8px}
+.palette-cat-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin:10px 0 6px;padding:0 4px}
+.palette-cat-title:first-child{margin-top:0}
+.palette-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}
+.emoji-block{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg-tertiary);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  cursor:grab;transition:all 0.2s var(--ease);font-size:1.5rem;position:relative;
+  user-select:none;-webkit-user-select:none;
+}
+.emoji-block:hover{border-color:var(--gold);background:var(--gold-glow);transform:scale(1.08)}
+.emoji-block:active{cursor:grabbing;transform:scale(0.95)}
+.emoji-block .label{font-size:0.5rem;color:var(--text-muted);margin-top:2px;line-height:1}
+.emoji-block[data-cat="flow"]:hover{border-color:var(--blue)}
+.emoji-block[data-cat="data"]:hover{border-color:var(--green)}
+.emoji-block[data-cat="iot"]:hover{border-color:var(--teal)}
+.emoji-block[data-cat="security"]:hover{border-color:var(--red)}
+
+/* Tooltip */
+.emoji-tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-sm);
+  padding:8px 12px;font-size:0.72rem;white-space:nowrap;z-index:50;pointer-events:none;
+  opacity:0;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  text-align:center;line-height:1.5;
+}
+.emoji-block:hover .emoji-tooltip{opacity:1}
+
+/* Workspace */
+.workspace{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+}
+.workspace-toolbar{
+  display:flex;align-items:center;gap:6px;padding:8px 12px;
+  border-bottom:1px solid var(--border-subtle);flex-wrap:wrap;
+}
+.ws-btn{
+  padding:6px 12px;border-radius:var(--radius-sm);font-size:0.8rem;
+  background:var(--bg-tertiary);border:1px solid var(--border-subtle);
+  transition:all 0.2s var(--ease);display:flex;align-items:center;gap:4px;
+}
+.ws-btn:hover{border-color:var(--gold);background:var(--gold-glow)}
+.ws-btn.run{background:rgba(63,185,80,0.15);border-color:rgba(63,185,80,0.3);color:var(--green)}
+.ws-btn.run:hover{background:rgba(63,185,80,0.25)}
+.ws-btn.stop{background:rgba(248,81,73,0.15);border-color:rgba(248,81,73,0.3);color:var(--red)}
+.ws-btn.stop:hover{background:rgba(248,81,73,0.25)}
+.ws-speed{display:flex;align-items:center;gap:4px;margin-left:auto;font-size:0.75rem;color:var(--text-muted)}
+.ws-speed input[type=range]{width:80px;accent-color:var(--gold)}
+
+.workspace-area{
+  flex:1;overflow-y:auto;padding:16px;
+  background-image:radial-gradient(circle,var(--border-subtle) 1px,transparent 1px);
+  background-size:24px 24px;min-height:300px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.workspace-area.drag-over{background-color:var(--gold-glow);border:2px dashed var(--gold)}
+.workspace-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;color:var(--text-muted);gap:12px;text-align:center;padding:40px;
+}
+.workspace-empty .big-emoji{font-size:3rem;opacity:0.5}
+
+/* Flow Blocks in workspace */
+.flow-block{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:var(--bg-tertiary);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  position:relative;transition:all 0.25s var(--ease);cursor:move;
+  animation:blockIn 0.3s var(--ease);
+}
+@keyframes blockIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.flow-block:hover{border-color:var(--gold)}
+.flow-block.executing{border-color:var(--gold);box-shadow:0 0 16px var(--gold-glow);background:var(--gold-glow)}
+.flow-block .block-num{
+  font-size:0.65rem;color:var(--text-muted);background:var(--bg-secondary);
+  width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.flow-block .block-emoji{font-size:1.6rem;flex-shrink:0}
+.flow-block .block-info{flex:1;min-width:0}
+.flow-block .block-name{font-size:0.8rem;font-weight:500}
+.flow-block .block-detail{font-size:0.7rem;color:var(--text-muted)}
+.flow-block .block-delete{
+  opacity:0;transition:opacity 0.2s;color:var(--red);font-size:1.1rem;padding:4px;
+}
+.flow-block:hover .block-delete{opacity:1}
+.flow-block .block-config{font-size:0.8rem;color:var(--teal);padding:4px;cursor:pointer}
+
+/* Indented blocks (inside loop/if) */
+.flow-block.indent-1{margin-left:28px;border-left:2px solid var(--teal)}
+.flow-block.indent-2{margin-left:56px;border-left:2px solid var(--yellow)}
+.flow-block.branch-true{border-left:2px solid var(--green)}
+.flow-block.branch-false{border-left:2px solid var(--red)}
+
+/* Log Panel */
+.log-panel-container{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.log-header{
+  padding:8px 12px;border-bottom:1px solid var(--border-subtle);
+  display:flex;align-items:center;justify-content:space-between;font-size:0.8rem;
+}
+.log-body{flex:1;overflow-y:auto;padding:8px 12px;font-family:var(--font-mono);font-size:0.75rem}
+.log-entry{padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;gap:8px;animation:fadeIn 0.2s}
+.log-time{color:var(--text-muted);flex-shrink:0}
+.log-entry.success{color:var(--green)}
+.log-entry.warn{color:var(--yellow)}
+.log-entry.error{color:var(--red)}
+.log-entry.info{color:var(--blue)}
+
+/* ══════ CONFIG MODAL ══════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);
+  padding:24px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.modal h3{margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal label{display:block;margin:10px 0 4px;font-size:0.82rem;color:var(--text-secondary)}
+.modal input,.modal select{width:100%;margin-bottom:4px}
+.modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.btn{
+  padding:8px 18px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;
+  transition:all 0.2s var(--ease);border:1px solid var(--border-default);
+}
+.btn-gold{background:var(--gold);color:var(--bg-deep);border-color:var(--gold)}
+.btn-gold:hover{background:var(--gold-dim)}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--bg-tertiary)}
+
+/* ══════ IOT TAB ══════ */
+.iot-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:768px){.iot-layout{grid-template-columns:1fr}}
+.iot-card{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);
+  padding:16px;
+}
+.iot-card h4{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:0.95rem}
+.device-row{
+  display:flex;align-items:center;gap:10px;padding:10px;
+  background:var(--bg-tertiary);border-radius:var(--radius-sm);margin-bottom:6px;
+}
+.device-emoji{font-size:1.8rem}
+.device-info{flex:1}
+.device-name{font-size:0.85rem;font-weight:500}
+.device-value{font-size:1.4rem;font-weight:700;font-family:var(--font-mono)}
+.device-status{font-size:0.7rem}
+.device-toggle{
+  padding:6px 14px;border-radius:20px;font-size:0.75rem;
+  background:var(--bg-elevated);border:1px solid var(--border-default);transition:all 0.2s;
+}
+.device-toggle.on{background:rgba(63,185,80,0.2);border-color:var(--green);color:var(--green)}
+.msg-log{max-height:250px;overflow-y:auto;font-family:var(--font-mono);font-size:0.72rem;padding:8px}
+.msg-entry{padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.mini-chart{height:80px;display:flex;align-items:flex-end;gap:3px;padding:8px 0}
+.mini-bar{background:var(--teal);border-radius:2px 2px 0 0;flex:1;min-width:8px;transition:height 0.3s var(--ease)}
+
+/* Topic builder */
+.topic-builder{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.topic-part{
+  padding:4px 10px;background:var(--bg-tertiary);border:1px solid var(--border-subtle);
+  border-radius:20px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;
+}
+.topic-part:hover,.topic-part.selected{border-color:var(--teal);background:var(--teal-glow);color:var(--teal)}
+.topic-display{font-family:var(--font-mono);font-size:0.8rem;color:var(--teal);padding:6px 0}
+
+/* ══════ CYBER TAB ══════ */
+.cyber-layout{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.cyber-card{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:20px;
+}
+.cyber-card h4{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.strength-bar{height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;margin:8px 0}
+.strength-fill{height:100%;border-radius:4px;transition:width 0.4s var(--ease),background 0.4s}
+.strength-label{font-size:0.75rem;font-weight:600}
+.caesar-grid{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
+.caesar-letter{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  background:var(--bg-tertiary);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  font-family:var(--font-mono);font-size:0.85rem;transition:all 0.2s;
+}
+.caesar-letter.shifted{background:var(--gold-glow);border-color:var(--gold);color:var(--gold)}
+.perm-scenario{
+  padding:12px;background:var(--bg-tertiary);border-radius:var(--radius-sm);margin:8px 0;
+  border-left:3px solid var(--border-default);
+}
+.perm-options{display:flex;gap:8px;margin-top:8px}
+.perm-btn{
+  padding:6px 16px;border-radius:20px;font-size:0.8rem;
+  background:var(--bg-elevated);border:1px solid var(--border-default);transition:all 0.2s;
+}
+.perm-btn:hover{border-color:var(--gold)}
+.perm-btn.correct{background:rgba(63,185,80,0.2);border-color:var(--green);color:var(--green)}
+.perm-btn.wrong{background:rgba(248,81,73,0.2);border-color:var(--red);color:var(--red)}
+
+/* ══════ CHALLENGES TAB ══════ */
+.challenges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.challenge-card{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);
+  padding:16px;cursor:pointer;transition:all 0.25s var(--ease);
+}
+.challenge-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.challenge-type{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:6px}
+.challenge-title{font-size:1rem;font-weight:600;margin-bottom:6px}
+.challenge-desc{font-size:0.8rem;color:var(--text-secondary);margin-bottom:10px}
+.challenge-stars{color:var(--gold);letter-spacing:2px}
+.challenge-level{font-size:0.7rem;padding:2px 8px;border-radius:10px;background:var(--bg-tertiary)}
+.challenge-active{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:20px;
+}
+.challenge-active h3{margin-bottom:12px}
+.challenge-flow{
+  display:flex;flex-wrap:wrap;gap:6px;padding:16px;
+  background:var(--bg-tertiary);border-radius:var(--radius-sm);margin:12px 0;min-height:60px;
+}
+.challenge-emoji-slot{
+  width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  background:var(--bg-elevated);border:2px dashed var(--border-default);border-radius:var(--radius-sm);
+  font-size:1.6rem;transition:all 0.2s;
+}
+.challenge-emoji-slot.filled{border-style:solid;border-color:var(--gold)}
+.challenge-emoji-slot.error{border-color:var(--red);background:rgba(248,81,73,0.1)}
+.challenge-emoji-slot.correct{border-color:var(--green);background:rgba(63,185,80,0.1)}
+.challenge-result{padding:12px;border-radius:var(--radius-sm);margin-top:12px;font-weight:500;text-align:center}
+.challenge-result.success{background:rgba(63,185,80,0.15);color:var(--green);border:1px solid rgba(63,185,80,0.3)}
+.challenge-result.fail{background:rgba(248,81,73,0.15);color:var(--red);border:1px solid rgba(248,81,73,0.3)}
+
+/* ══════ HELP TAB ══════ */
+.help-layout{max-width:800px;margin:0 auto}
+.help-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.help-nav-btn{
+  padding:8px 14px;border-radius:20px;font-size:0.8rem;
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);transition:all 0.2s;
+}
+.help-nav-btn:hover,.help-nav-btn.active{border-color:var(--gold);background:var(--gold-glow);color:var(--gold)}
+.help-section{display:none;animation:fadeIn 0.3s}
+.help-section.active{display:block}
+.help-section h3{margin-bottom:12px;color:var(--gold);display:flex;align-items:center;gap:8px}
+.help-section p,.help-section li{font-size:0.88rem;color:var(--text-secondary);line-height:1.7;margin-bottom:8px}
+.dict-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.dict-table th{text-align:left;padding:8px;border-bottom:2px solid var(--border-default);color:var(--gold);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px}
+.dict-table td{padding:8px;border-bottom:1px solid var(--border-subtle)}
+.dict-table tr:hover{background:var(--gold-glow)}
+.dict-emoji{font-size:1.3rem}
+.learning-path{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+.path-node{
+  padding:10px 20px;border-radius:var(--radius-md);text-align:center;
+  background:var(--bg-tertiary);border:1px solid var(--border-subtle);font-size:0.85rem;
+}
+.path-node.current{border-color:var(--gold);background:var(--gold-glow)}
+.path-arrow{color:var(--text-muted);font-size:1.2rem}
+
+/* ══════ FOOTER ══════ */
+.app-footer{
+  text-align:center;padding:16px;font-size:0.72rem;color:var(--text-muted);
+  border-top:1px solid var(--border-subtle);margin-top:24px;
+}
+
+/* ══════ SAVE/LOAD PANEL ══════ */
+.save-panel{
+  background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px;margin-top:12px;
+}
+.save-list{max-height:300px;overflow-y:auto}
+.save-item{
+  display:flex;align-items:center;justify-content:space-between;padding:10px;
+  border-bottom:1px solid var(--border-subtle);transition:background 0.2s;
+}
+.save-item:hover{background:var(--bg-tertiary)}
+.save-item-info{flex:1}
+.save-item-name{font-size:0.85rem;font-weight:500}
+.save-item-meta{font-size:0.7rem;color:var(--text-muted)}
+.save-item-actions{display:flex;gap:6px}
+
+/* ══════ UTILITIES ══════ */
+.flex-center{display:flex;align-items:center;justify-content:center}
+.gap-sm{gap:6px}.gap-md{gap:12px}
+.text-gold{color:var(--gold)}.text-teal{color:var(--teal)}.text-green{color:var(--green)}.text-red{color:var(--red)}
+.mt-sm{margin-top:8px}.mt-md{margin-top:16px}
+.badge{font-size:0.65rem;padding:2px 6px;border-radius:8px;background:var(--bg-tertiary)}
+.hidden{display:none!important}
+.fade-enter{animation:fadeIn 0.3s var(--ease)}
+</style>
+</head>
+<body>
+
+<!-- Islamic Geometric Background Pattern -->
+<div class="geo-pattern" aria-hidden="true"></div>
+
+<!-- Bismillah Header -->
+<div class="bismillah" role="banner">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
+
+<!-- App Header -->
+<header class="app-header">
+  <div class="header-top">
+    <div class="app-logo">
+      <span class="emoji">🧩</span>
+      <span class="text">EmojiFlow</span>
+    </div>
+    <div class="level-selector" role="radiogroup" aria-label="Level">
+      <button class="level-btn active" data-level="newb" role="radio" aria-checked="true">🐣 Newb</button>
+      <button class="level-btn" data-level="explorer" role="radio" aria-checked="false">🧭 Explorer</button>
+      <button class="level-btn" data-level="developer" role="radio" aria-checked="false">💻 Dev</button>
+    </div>
+    <button class="hamburger" aria-label="Menu" onclick="toggleMenu()">☰</button>
+  </div>
+  <nav>
+    <div class="tab-nav collapsed" role="tablist">
+      <button class="tab-btn active" data-tab="coding" role="tab"><span class="tab-emoji">🧩</span> Coding</button>
+      <button class="tab-btn" data-tab="iot" role="tab"><span class="tab-emoji">🔌</span> IoT Lab</button>
+      <button class="tab-btn" data-tab="cyber" role="tab"><span class="tab-emoji">🔒</span> Cyber</button>
+      <button class="tab-btn" data-tab="challenges" role="tab"><span class="tab-emoji">🧪</span> Challenges</button>
+      <button class="tab-btn" data-tab="help" role="tab"><span class="tab-emoji">❓</span> Help</button>
+    </div>
+  </nav>
+</header>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MAIN CONTENT -->
+<!-- ══════════════════════════════════════════════ -->
+<main class="app-main">
+
+<!-- ═══ TAB 1: CODING ═══ -->
+<section class="tab-panel active" id="tab-coding" role="tabpanel">
+  <div class="coding-layout">
+    <!-- Palette -->
+    <aside class="palette-sidebar">
+      <div class="palette-header">🎨 Palette</div>
+      <input class="palette-search" type="text" placeholder="🔍 Search emoji..." id="paletteSearch" oninput="filterPalette(this.value)">
+      <div class="palette-categories" id="paletteContainer"></div>
+    </aside>
+
+    <!-- Workspace -->
+    <div class="workspace">
+      <div class="workspace-toolbar">
+        <button class="ws-btn run" onclick="runFlow()" title="Run ▶️">▶️ Run</button>
+        <button class="ws-btn stop" onclick="stopFlow()" title="Stop ⏹">⏹</button>
+        <button class="ws-btn" onclick="debugFlow()" title="Debug 🐞">🐞</button>
+        <button class="ws-btn" onclick="clearWorkspace()" title="Clear 🗑️">🗑️</button>
+        <button class="ws-btn" onclick="saveFlow()" title="Save 💾">💾</button>
+        <button class="ws-btn" onclick="showLoadPanel()" title="Load 📂">📂</button>
+        <div class="ws-speed">
+          <span>🐢</span>
+          <input type="range" min="100" max="2000" value="800" id="speedSlider" title="Speed">
+          <span>🐇</span>
+        </div>
+      </div>
+      <div class="workspace-area" id="workspaceArea"
+           ondragover="wsDragOver(event)" ondragleave="wsDragLeave(event)" ondrop="wsDrop(event)">
+        <div class="workspace-empty" id="wsEmpty">
+          <div class="big-emoji">👆</div>
+          <div>اسحب الإيموجي هنا لبناء التدفق<br>Drag emojis here to build your flow<br>Glissez les emojis ici</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Panel -->
+    <div class="log-panel-container">
+      <div class="log-header">
+        <span>🧾 Log</span>
+        <button class="ws-btn" onclick="clearLog()" style="padding:3px 8px;font-size:0.7rem">Clear</button>
+      </div>
+      <div class="log-body" id="logBody"></div>
+    </div>
+  </div>
+
+  <!-- Save/Load Panel (hidden by default) -->
+  <div class="save-panel hidden" id="saveLoadPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h4>💾 Saved Flows</h4>
+      <div style="display:flex;gap:6px">
+        <button class="ws-btn" onclick="exportAllFlows()">📤 Export</button>
+        <button class="ws-btn" onclick="document.getElementById('importFile').click()">📥 Import</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importFlows(event)">
+        <button class="ws-btn" onclick="hideSaveLoadPanel()">✕</button>
+      </div>
+    </div>
+    <div class="save-list" id="saveList"></div>
+  </div>
+</section>
+
+<!-- ═══ TAB 2: IOT LAB ═══ -->
+<section class="tab-panel" id="tab-iot" role="tabpanel">
+  <h2 style="margin-bottom:16px;display:flex;align-items:center;gap:8px">🔌 IoT Mini Lab <span class="badge">Simulated</span></h2>
+
+  <div class="iot-layout">
+    <!-- Devices -->
+    <div class="iot-card">
+      <h4>📟 Devices / الأجهزة</h4>
+      <div id="iotDevices"></div>
+      <button class="ws-btn mt-md" onclick="iotTick()" style="width:100%;justify-content:center">⏱ Simulate Tick</button>
+    </div>
+
+    <!-- Messages & Dashboard -->
+    <div class="iot-card">
+      <h4>📡 Messages & Dashboard</h4>
+      <div style="margin-bottom:12px">
+        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:6px">Topic Builder:</div>
+        <div class="topic-builder" id="topicBuilder"></div>
+        <div class="topic-display" id="topicDisplay">home/room/temperature</div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:4px">📊 Temperature Chart (last 10)</div>
+      <div class="mini-chart" id="iotChart"></div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);margin:10px 0 4px">📨 Message Log</div>
+      <div class="msg-log" id="iotMsgLog"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TAB 3: CYBER ═══ -->
+<section class="tab-panel" id="tab-cyber" role="tabpanel">
+  <h2 style="margin-bottom:16px;display:flex;align-items:center;gap:8px">🔒 Cyber Basics <span class="badge">Defensive Only</span></h2>
+  <div class="cyber-layout">
+    <!-- Password Strength -->
+    <div class="cyber-card">
+      <h4>🔑 Password Strength / قوة كلمة المرور</h4>
+      <input type="text" id="passwordInput" placeholder="Type a test password..." oninput="checkPassword(this.value)" style="width:100%;font-family:var(--font-mono)" autocomplete="off">
+      <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%;background:var(--red)"></div></div>
+      <div class="strength-label" id="strengthLabel" style="color:var(--red)">Type something...</div>
+      <div id="passwordTips" style="font-size:0.78rem;color:var(--text-secondary);margin-top:8px"></div>
+      <div style="margin-top:12px;padding:10px;background:var(--bg-tertiary);border-radius:var(--radius-sm);font-size:0.78rem">
+        <strong style="color:var(--gold)">⚠️ Safety:</strong> This is a simulation — never type your real password here!<br>
+        <strong style="color:var(--gold)">⚠️ أمان:</strong> هذه محاكاة — لا تكتب كلمة مرورك الحقيقية!
+      </div>
+    </div>
+
+    <!-- Caesar Cipher -->
+    <div class="cyber-card">
+      <h4>🧪 Caesar Cipher / شفرة قيصر</h4>
+      <input type="text" id="caesarInput" placeholder="Type a message..." oninput="caesarEncrypt()" style="width:100%" maxlength="30">
+      <label style="font-size:0.8rem">Shift / الإزاحة: <span id="shiftVal">3</span></label>
+      <input type="range" min="1" max="25" value="3" id="caesarShift" oninput="caesarEncrypt()" style="width:100%;accent-color:var(--gold)">
+      <div style="font-size:0.78rem;color:var(--text-muted);margin:6px 0">Encrypted / مشفّر:</div>
+      <div class="caesar-grid" id="caesarOutput"></div>
+      <div style="margin-top:10px;font-size:0.78rem;color:var(--text-secondary)">
+        🔑 Encryption = reversible ↔️ | Hashing = one-way ➡️<br>
+        🔑 التشفير = قابل للعكس | التجزئة = اتجاه واحد
+      </div>
+    </div>
+
+    <!-- Permissions Game -->
+    <div class="cyber-card" style="grid-column:1/-1">
+      <h4>🪪 Permission Game / لعبة الأذونات</h4>
+      <div id="permGame"></div>
+      <div id="permScore" style="font-size:0.85rem;font-weight:600;margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TAB 4: CHALLENGES ═══ -->
+<section class="tab-panel" id="tab-challenges" role="tabpanel">
+  <h2 style="margin-bottom:16px;display:flex;align-items:center;gap:8px">🧪 Challenges / التحديات</h2>
+  <div id="challengesList" class="challenges-grid"></div>
+  <div id="challengeActive" class="challenge-active hidden"></div>
+</section>
+
+<!-- ═══ TAB 5: HELP ═══ -->
+<section class="tab-panel" id="tab-help" role="tabpanel">
+  <div class="help-layout">
+    <h2 style="margin-bottom:16px;display:flex;align-items:center;gap:8px">❓ Help / المساعدة / Aide</h2>
+    <div class="help-nav" id="helpNav"></div>
+    <div id="helpContent"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer class="app-footer">
+  🔒 100% Local — No Server — No Tracking | بِسْمِ ٱللَّٰهِ | EmojiFlow v1.0 — 2026
+</footer>
+
+<!-- Config Modal -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <h3 id="modalTitle">⚙️ Configure Block</h3>
+    <div id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="applyConfig()">Apply ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- JAVASCRIPT -->
+<!-- ══════════════════════════════════════════════ -->
+<script>
+/* ═══════════════════════════════════════════
+   DATA: EMOJI DICTIONARY
+   ═══════════════════════════════════════════ */
+const EMOJIS = {
+  flow: [
+    { emoji:'▶️', id:'run', ar:'تشغيل', en:'Run', fr:'Exécuter' },
+    { emoji:'⏹', id:'stop', ar:'إيقاف', en:'Stop', fr:'Arrêter' },
+    { emoji:'🧩', id:'step', ar:'خطوة', en:'Step', fr:'Étape', configurable:true, config:{type:'action',default:'print "Hello!"'} },
+    { emoji:'🔀', id:'ifelse', ar:'إذا/وإلا', en:'If/Else', fr:'Si/Sinon', configurable:true, config:{type:'condition',default:'📦 == 5'} },
+    { emoji:'🔁', id:'loop', ar:'حلقة', en:'Loop', fr:'Boucle', configurable:true, config:{type:'loop',default:3,max:100} },
+    { emoji:'⏱', id:'timer', ar:'مؤقت', en:'Timer', fr:'Minuterie', configurable:true, config:{type:'timer',default:2,max:30} },
+    { emoji:'🎯', id:'goal', ar:'هدف', en:'Goal', fr:'Objectif' },
+    { emoji:'🧾', id:'log', ar:'سجل', en:'Log', fr:'Journal', configurable:true, config:{type:'message',default:'Hello!'} },
+    { emoji:'🐞', id:'debug', ar:'تصحيح', en:'Debug', fr:'Débogage' },
+  ],
+  data: [
+    { emoji:'📦', id:'payload', ar:'حمولة', en:'Payload', fr:'Charge', configurable:true, config:{type:'value',default:'data'} },
+    { emoji:'🏷', id:'topic', ar:'موضوع', en:'Topic', fr:'Sujet', configurable:true, config:{type:'text',default:'home/room'} },
+    { emoji:'🔢', id:'number', ar:'رقم', en:'Number', fr:'Nombre', configurable:true, config:{type:'number',default:0} },
+    { emoji:'🔤', id:'text', ar:'نص', en:'Text', fr:'Texte', configurable:true, config:{type:'text',default:'hello'} },
+    { emoji:'✅', id:'true', ar:'صحيح', en:'True', fr:'Vrai' },
+    { emoji:'❌', id:'false', ar:'خطأ', en:'False', fr:'Faux' },
+  ],
+  iot: [
+    { emoji:'🔌', id:'device', ar:'جهاز', en:'Device', fr:'Appareil' },
+    { emoji:'📡', id:'message', ar:'رسالة', en:'Message', fr:'Message' },
+    { emoji:'📥', id:'subscribe', ar:'اشتراك', en:'Subscribe', fr:"S'abonner" },
+    { emoji:'📤', id:'publish', ar:'نشر', en:'Publish', fr:'Publier' },
+    { emoji:'📶', id:'signal', ar:'إشارة', en:'Signal', fr:'Signal' },
+    { emoji:'🔋', id:'battery', ar:'بطارية', en:'Battery', fr:'Batterie' },
+  ],
+  security: [
+    { emoji:'🔒', id:'lock', ar:'قفل', en:'Lock', fr:'Verrouiller' },
+    { emoji:'🪪', id:'auth', ar:'مصادقة', en:'Auth', fr:'Auth.' },
+    { emoji:'🧯', id:'safety', ar:'أمان', en:'Safety', fr:'Sécurité' },
+    { emoji:'🧪', id:'lab', ar:'مختبر', en:'Lab', fr:'Labo' },
+    { emoji:'⚠️', id:'warning', ar:'تحذير', en:'Warning', fr:'Avertissement' },
+  ]
+};
+
+const CAT_LABELS = { flow:'🔵 Flow / التدفق', data:'🟢 Data / البيانات', iot:'🟡 IoT', security:'🔴 Security / الأمن' };
+
+/* ═══════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════ */
+let currentLevel = 'newb'; // newb | explorer | developer
+let flowBlocks = []; // workspace blocks
+let isRunning = false;
+let isDebug = false;
+let runIndex = -1;
+let runTimer = null;
+let variables = {}; // runtime variables
+let iotData = { tempHistory:[], msgLog:[], devices:{} };
+let permScore = { correct:0, total:0 };
+let currentChallenge = null;
+let configTarget = null; // block being configured
+
+/* ═══════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  buildPalette();
+  initTabs();
+  initLevels();
+  initIoT();
+  initCyber();
+  initChallenges();
+  initHelp();
+  addLog('info', '🧩 EmojiFlow ready! Drag emojis to start.');
+  addLog('info', '🧩 جاهز! اسحب الإيموجي للبدء.');
+});
+
+/* ═══════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════ */
+function initTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected','true');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      // Close mobile menu
+      document.querySelector('.tab-nav').classList.remove('expanded');
+      document.querySelector('.tab-nav').classList.add('collapsed');
+    });
+  });
+}
+
+function toggleMenu() {
+  const nav = document.querySelector('.tab-nav');
+  nav.classList.toggle('collapsed');
+  nav.classList.toggle('expanded');
+}
+
+/* ═══════════════════════════════════════════
+   LEVELS
+   ═══════════════════════════════════════════ */
+function initLevels() {
+  document.querySelectorAll('.level-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.level-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-checked','false'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-checked','true');
+      currentLevel = btn.dataset.level;
+      applyLevel();
+    });
+  });
+  applyLevel();
+}
+
+function applyLevel() {
+  // Show/hide tabs based on level
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(t => {
+    const tab = t.dataset.tab;
+    if (currentLevel === 'newb') {
+      t.classList.toggle('hidden', tab === 'iot' || tab === 'cyber');
+    } else {
+      t.classList.remove('hidden');
+    }
+  });
+  buildPalette();
+  initChallenges();
+}
+
+/* ═══════════════════════════════════════════
+   PALETTE
+   ═══════════════════════════════════════════ */
+function buildPalette() {
+  const container = document.getElementById('paletteContainer');
+  container.innerHTML = '';
+  const cats = currentLevel === 'newb' ? ['flow','data'] : Object.keys(EMOJIS);
+  cats.forEach(cat => {
+    const title = document.createElement('div');
+    title.className = 'palette-cat-title';
+    title.textContent = CAT_LABELS[cat];
+    container.appendChild(title);
+    const grid = document.createElement('div');
+    grid.className = 'palette-grid';
+    let items = EMOJIS[cat];
+    if (currentLevel === 'newb') {
+      // Limit blocks for newb
+      const allowedNewb = ['step','log','goal','payload','number','text','true','false','run','loop','ifelse'];
+      items = items.filter(e => allowedNewb.includes(e.id));
+    }
+    items.forEach(e => {
+      const block = document.createElement('div');
+      block.className = 'emoji-block';
+      block.dataset.cat = cat;
+      block.dataset.id = e.id;
+      block.draggable = true;
+      block.innerHTML = `
+        <span style="pointer-events:none">${e.emoji}</span>
+        <span class="label">${e.en}</span>
+        <div class="emoji-tooltip">${e.emoji} ${e.en}<br>${e.ar}<br>${e.fr}</div>
+      `;
+      block.addEventListener('dragstart', (ev) => {
+        ev.dataTransfer.setData('text/plain', JSON.stringify({ cat, ...e }));
+        ev.dataTransfer.effectAllowed = 'copy';
+      });
+      // Tap to add (mobile)
+      block.addEventListener('click', () => {
+        addBlockToWorkspace({ cat, ...e });
+      });
+      grid.appendChild(block);
+    });
+    container.appendChild(grid);
+  });
+}
+
+function filterPalette(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.emoji-block').forEach(b => {
+    const id = b.dataset.id;
+    const allEmojis = Object.values(EMOJIS).flat();
+    const found = allEmojis.find(e => e.id === id);
+    if (!found) return;
+    const match = found.en.toLowerCase().includes(q) || found.ar.includes(q) || found.fr.toLowerCase().includes(q) || found.emoji.includes(q);
+    b.style.display = match ? '' : 'none';
+  });
+}
+
+/* ═══════════════════════════════════════════
+   WORKSPACE — Drag & Drop
+   ═══════════════════════════════════════════ */
+function wsDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function wsDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function wsDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  try {
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    addBlockToWorkspace(data);
+  } catch(err) {}
+}
+
+function addBlockToWorkspace(data) {
+  const maxBlocks = currentLevel === 'newb' ? 8 : currentLevel === 'explorer' ? 20 : 50;
+  if (flowBlocks.length >= maxBlocks) {
+    addLog('warn', `⚠️ Max ${maxBlocks} blocks for this level!`);
+    return;
+  }
+  const block = {
+    id: Date.now() + Math.random(),
+    emojiId: data.id,
+    emoji: data.emoji,
+    en: data.en,
+    ar: data.ar,
+    fr: data.fr,
+    cat: data.cat,
+    configurable: data.configurable || false,
+    config: data.config ? { ...data.config, value: data.config.default } : null,
+    userValue: data.config ? data.config.default : null,
+  };
+  flowBlocks.push(block);
+  renderWorkspace();
+}
+
+function renderWorkspace() {
+  const area = document.getElementById('workspaceArea');
+  const empty = document.getElementById('wsEmpty');
+  if (flowBlocks.length === 0) {
+    area.innerHTML = '';
+    area.appendChild(empty);
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  // Compute indentation
+  let indent = 0;
+  const indents = [];
+  flowBlocks.forEach(b => {
+    if (b.emojiId === 'loop' || b.emojiId === 'ifelse') {
+      indents.push(indent);
+      indent++;
+    } else if (b.emojiId === 'goal' && indent > 0) {
+      indent--;
+      indents.push(indent);
+    } else {
+      indents.push(indent);
+    }
+  });
+
+  let html = '';
+  flowBlocks.forEach((b, i) => {
+    const ind = Math.min(indents[i] || 0, 4);
+    const indClass = ind > 0 ? `indent-${ind}` : '';
+    const execClass = (isRunning && i === runIndex) ? 'executing' : '';
+    const detail = b.userValue !== null && b.userValue !== undefined ? b.userValue : '';
+    html += `
+      <div class="flow-block ${indClass} ${execClass}" data-idx="${i}" draggable="true"
+           ondragstart="blockDragStart(event,${i})" ondragover="blockDragOver(event)" ondrop="blockReorder(event,${i})">
+        <span class="block-num">${i + 1}</span>
+        <span class="block-emoji">${b.emoji}</span>
+        <div class="block-info">
+          <div class="block-name">${b.en} / ${b.ar}</div>
+          <div class="block-detail">${detail}</div>
+        </div>
+        ${b.configurable ? `<span class="block-config" onclick="openConfig(${i})" title="Configure">⚙️</span>` : ''}
+        <span class="block-delete" onclick="removeBlock(${i})" title="Delete">✕</span>
+      </div>
+    `;
+  });
+  // Keep empty placeholder ref but hidden
+  area.innerHTML = html + '<div class="workspace-empty hidden" id="wsEmpty"><div class="big-emoji">👆</div><div>Drag emojis here</div></div>';
+}
+
+let dragBlockIdx = null;
+function blockDragStart(e, idx) { dragBlockIdx = idx; e.dataTransfer.effectAllowed = 'move'; }
+function blockDragOver(e) { e.preventDefault(); }
+function blockReorder(e, targetIdx) {
+  e.preventDefault();
+  if (dragBlockIdx === null || dragBlockIdx === targetIdx) return;
+  const [moved] = flowBlocks.splice(dragBlockIdx, 1);
+  flowBlocks.splice(targetIdx, 0, moved);
+  dragBlockIdx = null;
+  renderWorkspace();
+}
+
+function removeBlock(idx) {
+  flowBlocks.splice(idx, 1);
+  renderWorkspace();
+}
+
+function clearWorkspace() {
+  flowBlocks = [];
+  renderWorkspace();
+  addLog('info', '🗑️ Workspace cleared');
+}
+
+/* ═══════════════════════════════════════════
+   CONFIG MODAL
+   ═══════════════════════════════════════════ */
+function openConfig(idx) {
+  configTarget = idx;
+  const block = flowBlocks[idx];
+  if (!block.config) return;
+  const modal = document.getElementById('configModal');
+  document.getElementById('modalTitle').textContent = `⚙️ ${block.emoji} ${block.en}`;
+  let body = '';
+  switch(block.config.type) {
+    case 'action':
+    case 'message':
+    case 'text':
+    case 'value':
+      body = `<label>Value / القيمة:</label><input id="cfgInput" value="${block.userValue || block.config.default}">`;
+      break;
+    case 'number':
+      body = `<label>Number / الرقم:</label><input type="number" id="cfgInput" value="${block.userValue ?? block.config.default}">`;
+      break;
+    case 'condition':
+      body = `<label>Condition / الشرط:</label>
+        <select id="cfgInput">
+          <option ${block.userValue==='📦 == 5'?'selected':''}>📦 == 5</option>
+          <option ${block.userValue==='📦 != 5'?'selected':''}>📦 != 5</option>
+          <option ${block.userValue==='📦 > 10'?'selected':''}>📦 > 10</option>
+          <option ${block.userValue==='✅ true'?'selected':''}>✅ true</option>
+          <option ${block.userValue==='❌ false'?'selected':''}>❌ false</option>
+        </select>`;
+      break;
+    case 'loop':
+      body = `<label>Repeat / التكرار: <span id="loopVal">${block.userValue || block.config.default}</span></label>
+        <input type="range" id="cfgInput" min="1" max="${block.config.max}" value="${block.userValue || block.config.default}" oninput="document.getElementById('loopVal').textContent=this.value">`;
+      break;
+    case 'timer':
+      body = `<label>Seconds / ثوانٍ: <span id="timerVal">${block.userValue || block.config.default}</span></label>
+        <input type="range" id="cfgInput" min="1" max="${block.config.max}" value="${block.userValue || block.config.default}" oninput="document.getElementById('timerVal').textContent=this.value">`;
+      break;
+  }
+  document.getElementById('modalBody').innerHTML = body;
+  modal.classList.add('show');
+}
+
+function closeModal() { document.getElementById('configModal').classList.remove('show'); configTarget = null; }
+function applyConfig() {
+  if (configTarget === null) return;
+  const input = document.getElementById('cfgInput');
+  if (input) {
+    flowBlocks[configTarget].userValue = input.value;
+  }
+  closeModal();
+  renderWorkspace();
+}
+
+/* ═══════════════════════════════════════════
+   FLOW ENGINE — Run / Debug / Stop
+   ═══════════════════════════════════════════ */
+function runFlow() {
+  if (flowBlocks.length === 0) { addLog('warn','⚠️ Add blocks first! / أضف بلوكات أولاً!'); return; }
+  isRunning = true; isDebug = false; runIndex = 0;
+  variables = { '📦': 0 };
+  addLog('info','▶️ Running flow...');
+  executeNext();
+}
+
+function debugFlow() {
+  if (flowBlocks.length === 0) { addLog('warn','⚠️ Add blocks first!'); return; }
+  isRunning = true; isDebug = true; runIndex = 0;
+  variables = { '📦': 0 };
+  addLog('info','🐞 Debug mode — click ▶️ Run to step');
+  renderWorkspace();
+}
+
+function stopFlow() {
+  isRunning = false; isDebug = false;
+  clearTimeout(runTimer);
+  runIndex = -1;
+  renderWorkspace();
+  addLog('info','⏹ Stopped');
+}
+
+function executeNext() {
+  if (!isRunning || runIndex >= flowBlocks.length) {
+    if (isRunning) addLog('success','✅ Flow complete! / اكتمل التدفق!');
+    isRunning = false; runIndex = -1;
+    renderWorkspace();
+    return;
+  }
+  renderWorkspace();
+  const block = flowBlocks[runIndex];
+  const speed = parseInt(document.getElementById('speedSlider').value);
+
+  // Execute block
+  switch(block.emojiId) {
+    case 'run':
+      addLog('info','▶️ Start');
+      break;
+    case 'stop':
+      addLog('info','⏹ Stop encountered');
+      stopFlow(); return;
+    case 'step':
+      addLog('success',`🧩 Step: ${block.userValue || 'action'}`);
+      break;
+    case 'log':
+      addLog('success',`🧾 ${block.userValue || 'Hello!'}`);
+      break;
+    case 'payload':
+      variables['📦'] = block.userValue || 'data';
+      addLog('info',`📦 Payload = ${variables['📦']}`);
+      break;
+    case 'number':
+      variables['📦'] = Number(block.userValue) || 0;
+      addLog('info',`🔢 Number = ${variables['📦']}`);
+      break;
+    case 'text':
+      variables['📦'] = block.userValue || '';
+      addLog('info',`🔤 Text = "${variables['📦']}"`);
+      break;
+    case 'true':
+      variables['✅'] = true;
+      addLog('info','✅ True');
+      break;
+    case 'false':
+      variables['✅'] = false;
+      addLog('info','❌ False');
+      break;
+    case 'goal':
+      addLog('success','🎯 Goal reached! أحسنت! Bravo!');
+      break;
+    case 'debug':
+      addLog('warn',`🐞 Debug — 📦=${JSON.stringify(variables['📦'])}`);
+      if (!isDebug) { isDebug = true; renderWorkspace(); return; } // pause
+      break;
+    case 'warning':
+      addLog('warn','⚠️ Warning checkpoint');
+      break;
+    case 'ifelse': {
+      const cond = block.userValue || '✅ true';
+      let result = false;
+      if (cond.includes('==')) result = String(variables['📦']) === cond.split('==')[1].trim();
+      else if (cond.includes('!=')) result = String(variables['📦']) !== cond.split('!=')[1].trim();
+      else if (cond.includes('>')) result = Number(variables['📦']) > Number(cond.split('>')[1].trim());
+      else if (cond.includes('true')) result = true;
+      else if (cond.includes('false')) result = false;
+      addLog(result?'success':'warn', `🔀 Condition "${cond}" → ${result?'✅ True':'❌ False'}`);
+      break;
+    }
+    case 'loop': {
+      const count = parseInt(block.userValue) || 3;
+      if (!block._loopCount) block._loopCount = 0;
+      block._loopCount++;
+      if (block._loopCount <= count) {
+        addLog('info',`🔁 Loop ${block._loopCount}/${count}`);
+        // Don't advance - will re-execute next block
+      } else {
+        block._loopCount = 0;
+        addLog('info',`🔁 Loop done`);
+      }
+      break;
+    }
+    case 'timer': {
+      const secs = parseInt(block.userValue) || 2;
+      addLog('info',`⏱ Waiting ${secs}s...`);
+      runIndex++;
+      runTimer = setTimeout(() => executeNext(), secs * 1000);
+      renderWorkspace();
+      return;
+    }
+    case 'lock':
+      addLog('success','🔒 Secured!');
+      break;
+    case 'publish':
+      addLog('success','📤 Message published');
+      break;
+    case 'subscribe':
+      addLog('success','📥 Subscribed to topic');
+      break;
+    default:
+      addLog('info',`${block.emoji} ${block.en}`);
+  }
+
+  runIndex++;
+  if (isDebug) {
+    renderWorkspace();
+    return; // wait for user to click Run again
+  }
+  runTimer = setTimeout(() => executeNext(), speed);
+}
+
+/* ═══════════════════════════════════════════
+   LOG
+   ═══════════════════════════════════════════ */
+function addLog(type, msg) {
+  const body = document.getElementById('logBody');
+  const time = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `log-entry ${type}`;
+  div.innerHTML = `<span class="log-time">${time}</span><span>${msg}</span>`;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+function clearLog() { document.getElementById('logBody').innerHTML = ''; }
+
+/* ═══════════════════════════════════════════
+   SAVE / LOAD (localStorage)
+   ═══════════════════════════════════════════ */
+function getSavedFlows() {
+  try { return JSON.parse(localStorage.getItem('emojiflow_saves') || '[]'); } catch { return []; }
+}
+function setSavedFlows(arr) { localStorage.setItem('emojiflow_saves', JSON.stringify(arr)); }
+
+function saveFlow() {
+  if (flowBlocks.length === 0) { addLog('warn','⚠️ Nothing to save!'); return; }
+  const saves = getSavedFlows();
+  const maxSaves = currentLevel === 'newb' ? 5 : currentLevel === 'explorer' ? 15 : 20;
+  if (saves.length >= maxSaves) { addLog('warn',`⚠️ Max ${maxSaves} saves! Delete one first.`); return; }
+  const name = prompt('Flow name / اسم التدفق:', `Flow ${saves.length + 1}`) || `Flow ${saves.length + 1}`;
+  const cleanBlocks = flowBlocks.map(b => ({
+    emojiId:b.emojiId, emoji:b.emoji, en:b.en, ar:b.ar, fr:b.fr,
+    cat:b.cat, configurable:b.configurable, config:b.config, userValue:b.userValue
+  }));
+  saves.push({ name, blocks:cleanBlocks, level:currentLevel, date:new Date().toISOString() });
+  setSavedFlows(saves);
+  addLog('success',`💾 Saved "${name}"`);
+}
+
+function showLoadPanel() {
+  const panel = document.getElementById('saveLoadPanel');
+  panel.classList.remove('hidden');
+  const saves = getSavedFlows();
+  const list = document.getElementById('saveList');
+  if (saves.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted)">No saved flows / لا توجد تدفقات محفوظة</div>';
+    return;
+  }
+  list.innerHTML = saves.map((s, i) => `
+    <div class="save-item">
+      <div class="save-item-info">
+        <div class="save-item-name">📄 ${s.name}</div>
+        <div class="save-item-meta">${s.blocks.length} blocks · ${new Date(s.date).toLocaleDateString()}</div>
+      </div>
+      <div class="save-item-actions">
+        <button class="ws-btn" onclick="loadFlow(${i})" style="font-size:0.75rem">📂 Load</button>
+        <button class="ws-btn" onclick="deleteFlow(${i})" style="font-size:0.75rem;color:var(--red)">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function hideSaveLoadPanel() { document.getElementById('saveLoadPanel').classList.add('hidden'); }
+
+function loadFlow(idx) {
+  const saves = getSavedFlows();
+  if (!saves[idx]) return;
+  flowBlocks = saves[idx].blocks.map(b => ({ ...b, id: Date.now() + Math.random() }));
+  renderWorkspace();
+  addLog('success',`📂 Loaded "${saves[idx].name}"`);
+  hideSaveLoadPanel();
+}
+
+function deleteFlow(idx) {
+  const saves = getSavedFlows();
+  if (!confirm(`Delete "${saves[idx].name}"?`)) return;
+  saves.splice(idx, 1);
+  setSavedFlows(saves);
+  showLoadPanel();
+}
+
+function exportAllFlows() {
+  const saves = getSavedFlows();
+  const blob = new Blob([JSON.stringify(saves, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'emojiflow-backup.json';
+  a.click();
+  addLog('success','📤 Exported all flows');
+}
+
+function importFlows(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw 'Invalid';
+      setSavedFlows(data);
+      addLog('success',`📥 Imported ${data.length} flows`);
+      showLoadPanel();
+    } catch { addLog('error','❌ Invalid file!'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ═══════════════════════════════════════════
+   IOT LAB
+   ═══════════════════════════════════════════ */
+function initIoT() {
+  iotData.devices = {
+    temp: { emoji:'🌡️', name:'Temperature', nameAr:'حرارة', value:22, unit:'°C', online:true },
+    light: { emoji:'💡', name:'Light', nameAr:'مصباح', value:'OFF', unit:'', online:true, toggle:true },
+    door: { emoji:'🚪', name:'Door', nameAr:'باب', value:'Closed', unit:'', online:true, toggle:true },
+    battery: { emoji:'🔋', name:'Battery', nameAr:'بطارية', value:87, unit:'%', online:true },
+  };
+  renderIoTDevices();
+  renderIoTChart();
+
+  // Topic builder
+  const parts = [['home','بيت'],['office','مكتب'],['room','غرفة'],['garden','حديقة'],['temperature','حرارة'],['light','ضوء'],['door','باب'],['battery','بطارية']];
+  const builder = document.getElementById('topicBuilder');
+  builder.innerHTML = parts.map(p => `<span class="topic-part" onclick="toggleTopicPart(this,'${p[0]}')">${p[0]}<br><small style="opacity:0.6">${p[1]}</small></span>`).join('');
+}
+
+let selectedTopicParts = ['home','room','temperature'];
+function toggleTopicPart(el, part) {
+  el.classList.toggle('selected');
+  if (selectedTopicParts.includes(part)) selectedTopicParts = selectedTopicParts.filter(p => p !== part);
+  else selectedTopicParts.push(part);
+  document.getElementById('topicDisplay').textContent = selectedTopicParts.join('/') || '...';
+}
+
+function renderIoTDevices() {
+  const container = document.getElementById('iotDevices');
+  container.innerHTML = Object.entries(iotData.devices).map(([key, d]) => `
+    <div class="device-row">
+      <span class="device-emoji">${d.emoji}</span>
+      <div class="device-info">
+        <div class="device-name">${d.name} / ${d.nameAr}</div>
+        <div class="device-value">${d.value}${d.unit}</div>
+        <div class="device-status" style="color:${d.online?'var(--green)':'var(--red)'}">${d.online?'🟢 Online':'🔴 Offline'}</div>
+      </div>
+      ${d.toggle ? `<button class="device-toggle ${d.value==='ON'||d.value==='Open'?'on':''}" onclick="toggleDevice('${key}')">${d.value==='ON'||d.value==='Open'?'ON':'OFF'}</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function toggleDevice(key) {
+  const d = iotData.devices[key];
+  if (key === 'light') d.value = d.value === 'ON' ? 'OFF' : 'ON';
+  if (key === 'door') d.value = d.value === 'Open' ? 'Closed' : 'Open';
+  renderIoTDevices();
+  addIoTMsg(`📤 ${d.emoji} ${d.name} → ${d.value}`);
+}
+
+function iotTick() {
+  // Simulate sensor data
+  const temp = Math.round(15 + Math.random() * 30);
+  iotData.devices.temp.value = temp;
+  iotData.devices.battery.value = Math.max(0, iotData.devices.battery.value - Math.floor(Math.random()*3));
+  iotData.tempHistory.push(temp);
+  if (iotData.tempHistory.length > 10) iotData.tempHistory.shift();
+  renderIoTDevices();
+  renderIoTChart();
+  addIoTMsg(`📡 ${selectedTopicParts.join('/')} → 📦 ${temp}°C`);
+  if (temp > 35) addIoTMsg(`⚠️ High temperature alert! / تنبيه حرارة عالية!`);
+}
+
+function addIoTMsg(msg) {
+  const time = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  iotData.msgLog.unshift(`${time} ${msg}`);
+  if (iotData.msgLog.length > 30) iotData.msgLog.pop();
+  document.getElementById('iotMsgLog').innerHTML = iotData.msgLog.map(m => `<div class="msg-entry">${m}</div>`).join('');
+}
+
+function renderIoTChart() {
+  const chart = document.getElementById('iotChart');
+  const data = iotData.tempHistory.length ? iotData.tempHistory : [22,24,21,26,28,23,25,22,27,24];
+  const max = Math.max(...data, 45);
+  chart.innerHTML = data.map(v => {
+    const h = Math.max(4, (v / max) * 100);
+    const color = v > 35 ? 'var(--red)' : v > 28 ? 'var(--yellow)' : 'var(--teal)';
+    return `<div class="mini-bar" style="height:${h}%;background:${color}" title="${v}°C"></div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   CYBER BASICS
+   ═══════════════════════════════════════════ */
+function initCyber() {
+  caesarEncrypt();
+  initPermGame();
+}
+
+function checkPassword(val) {
+  let score = 0;
+  const tips = [];
+  if (val.length >= 8) score += 25; else tips.push('Use 8+ characters / استخدم 8+ أحرف');
+  if (val.length >= 12) score += 10;
+  if (/[A-Z]/.test(val)) score += 15; else tips.push('Add uppercase / أضف حرف كبير');
+  if (/[a-z]/.test(val)) score += 10;
+  if (/[0-9]/.test(val)) score += 15; else tips.push('Add numbers / أضف أرقام');
+  if (/[^A-Za-z0-9]/.test(val)) score += 20; else tips.push('Add symbols / أضف رموز');
+  if (val.length >= 16) score += 5;
+  score = Math.min(100, score);
+
+  const fill = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  fill.style.width = score + '%';
+  if (score < 30) { fill.style.background = 'var(--red)'; label.style.color = 'var(--red)'; label.textContent = '❌ Weak / ضعيفة'; }
+  else if (score < 60) { fill.style.background = 'var(--yellow)'; label.style.color = 'var(--yellow)'; label.textContent = '⚠️ Fair / متوسطة'; }
+  else if (score < 85) { fill.style.background = 'var(--teal)'; label.style.color = 'var(--teal)'; label.textContent = '✅ Good / جيدة'; }
+  else { fill.style.background = 'var(--green)'; label.style.color = 'var(--green)'; label.textContent = '🔒 Strong! / قوية!'; }
+
+  document.getElementById('passwordTips').innerHTML = tips.map(t => `💡 ${t}`).join('<br>');
+}
+
+function caesarEncrypt() {
+  const input = document.getElementById('caesarInput').value.toUpperCase();
+  const shift = parseInt(document.getElementById('caesarShift').value);
+  document.getElementById('shiftVal').textContent = shift;
+  const output = document.getElementById('caesarOutput');
+  if (!input) { output.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem">Type a message above...</span>'; return; }
+  output.innerHTML = input.split('').map(ch => {
+    if (ch >= 'A' && ch <= 'Z') {
+      const shifted = String.fromCharCode(((ch.charCodeAt(0) - 65 + shift) % 26) + 65);
+      return `<span class="caesar-letter shifted">${shifted}</span>`;
+    }
+    return `<span class="caesar-letter">${ch}</span>`;
+  }).join('');
+}
+
+const PERM_SCENARIOS = [
+  { q:'Should your friend see your password? / هل يجب أن يرى صديقك كلمة مرورك؟', answer:'no', qFr:'Ton ami devrait-il voir ton mot de passe ?' },
+  { q:'Should an app know your real name? / هل يجب أن يعرف التطبيق اسمك الحقيقي؟', answer:'depends', qFr:"L'appli devrait-elle connaître ton vrai nom ?" },
+  { q:'Should you share your photo with a stranger? / هل تشارك صورتك مع غريب؟', answer:'no', qFr:'Partager ta photo avec un inconnu ?' },
+  { q:'Should your teacher see your grades? / هل يرى المعلم درجاتك؟', answer:'yes', qFr:"L'enseignant devrait-il voir tes notes ?" },
+  { q:'Should a game access your camera? / هل يحتاج اللعبة للكاميرا؟', answer:'no', qFr:'Un jeu devrait-il accéder à ta caméra ?' },
+  { q:'Should a map app know your location? / هل يحتاج تطبيق الخرائط لموقعك؟', answer:'yes', qFr:"L'appli de cartes devrait-elle connaître ta position ?" },
+];
+
+let permIdx = 0;
+function initPermGame() {
+  permIdx = 0; permScore = {correct:0, total:0};
+  renderPermQuestion();
+}
+
+function renderPermQuestion() {
+  const container = document.getElementById('permGame');
+  if (permIdx >= PERM_SCENARIOS.length) {
+    container.innerHTML = `<div style="text-align:center;padding:20px;font-size:1.1rem">
+      🎉 Done! Score: ${permScore.correct}/${permScore.total}<br>
+      <button class="btn btn-gold mt-md" onclick="initPermGame()">Play Again / العب مجدداً</button>
+    </div>`;
+    return;
+  }
+  const s = PERM_SCENARIOS[permIdx];
+  container.innerHTML = `
+    <div class="perm-scenario">
+      <div style="font-size:0.9rem">${s.q}</div>
+      <div style="font-size:0.75rem;color:var(--text-muted)">${s.qFr}</div>
+      <div class="perm-options">
+        <button class="perm-btn" onclick="answerPerm('yes')">✅ Yes / نعم</button>
+        <button class="perm-btn" onclick="answerPerm('depends')">🤔 Depends / يعتمد</button>
+        <button class="perm-btn" onclick="answerPerm('no')">❌ No / لا</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('permScore').textContent = `Score: ${permScore.correct}/${permScore.total}`;
+}
+
+function answerPerm(answer) {
+  const s = PERM_SCENARIOS[permIdx];
+  permScore.total++;
+  if (answer === s.answer) {
+    permScore.correct++;
+    addLog('success','🪪 Correct! / صحيح!');
+  } else {
+    addLog('warn',`🪪 Answer was: ${s.answer === 'yes' ? '✅ Yes' : s.answer === 'no' ? '❌ No' : '🤔 Depends'}`);
+  }
+  permIdx++;
+  renderPermQuestion();
+}
+
+/* ═══════════════════════════════════════════
+   CHALLENGES
+   ═══════════════════════════════════════════ */
+const CHALLENGES = [
+  // Fix the Flow
+  { type:'fix', level:'newb', title:'Missing Goal', titleAr:'هدف مفقود',
+    desc:'This flow runs but never finishes. Add the missing block!',
+    descAr:'هذا التدفق يعمل لكن لا ينتهي. أضف البلوك المفقود!',
+    flow:['▶️','🧩','🧾','❓'], answer:'🎯', stars:0 },
+  { type:'fix', level:'newb', title:'Wrong Order', titleAr:'ترتيب خاطئ',
+    desc:'The log appears before the step. Fix the order!',
+    descAr:'السجل يظهر قبل الخطوة. أصلح الترتيب!',
+    flow:['▶️','🧾','🧩','🎯'], answer:'swap_1_2', stars:0 },
+  { type:'fix', level:'explorer', title:'Infinite Loop', titleAr:'حلقة لانهائية',
+    desc:'This loop never stops! What is missing?',
+    descAr:'هذه الحلقة لا تتوقف! ما المفقود؟',
+    flow:['▶️','🔁','🧩','📤','❓'], answer:'🎯', stars:0 },
+  // Build
+  { type:'build', level:'newb', title:'Hello World', titleAr:'مرحبا بالعالم',
+    desc:'Build a flow that prints "Hello!" to the log.',
+    descAr:'ابنِ تدفقاً يطبع "Hello!" في السجل.',
+    expected:['log'], stars:0 },
+  { type:'build', level:'explorer', title:'Count to 3', titleAr:'عدّ إلى 3',
+    desc:'Build a flow with a loop that logs 3 times.',
+    descAr:'ابنِ تدفقاً بحلقة تطبع 3 مرات.',
+    expected:['loop','log'], stars:0 },
+  // Cyber
+  { type:'cyber', level:'newb', title:'Strong Password', titleAr:'كلمة مرور قوية',
+    desc:'Which password is stronger: "cat" or "C@t5Run!"?',
+    descAr:'أيهما أقوى: "cat" أم "C@t5Run!"?',
+    answer:'C@t5Run!', options:['cat','C@t5Run!'], stars:0 },
+  { type:'cyber', level:'explorer', title:'Caesar Decode', titleAr:'فك شفرة قيصر',
+    desc:'Decode "KHOOR" with shift 3. What is the original?',
+    descAr:'فك "KHOOR" بإزاحة 3. ما الأصل؟',
+    answer:'HELLO', options:['HELLO','WORLD','EMOJI','CODES'], stars:0 },
+  // Complete
+  { type:'complete', level:'explorer', title:'Add Security', titleAr:'أضف الأمان',
+    desc:'This IoT flow publishes data but has no security. Add the missing block!',
+    descAr:'هذا التدفق ينشر بيانات بدون أمان. أضف البلوك المفقود!',
+    flow:['▶️','🔌','📡','📤','❓','🎯'], answer:'🔒', stars:0 },
+];
+
+function initChallenges() {
+  const container = document.getElementById('challengesList');
+  const active = document.getElementById('challengeActive');
+  active.classList.add('hidden');
+  container.classList.remove('hidden');
+
+  const filtered = CHALLENGES.filter(c => {
+    if (currentLevel === 'newb') return c.level === 'newb';
+    if (currentLevel === 'explorer') return c.level === 'newb' || c.level === 'explorer';
+    return true;
+  });
+
+  container.innerHTML = filtered.map((c, i) => {
+    const typeLabels = {fix:'🔧 Fix',build:'🏗️ Build',complete:'🧠 Complete',cyber:'🔒 Cyber'};
+    return `
+      <div class="challenge-card" onclick="startChallenge(${CHALLENGES.indexOf(c)})">
+        <div class="challenge-type">${typeLabels[c.type]}</div>
+        <div class="challenge-title">${c.title} / ${c.titleAr}</div>
+        <div class="challenge-desc">${c.desc}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="challenge-stars">${c.stars > 0 ? '⭐'.repeat(c.stars) : '☆☆☆'}</div>
+          <span class="challenge-level">${c.level === 'newb' ? '🐣' : c.level === 'explorer' ? '🧭' : '💻'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function startChallenge(idx) {
+  currentChallenge = idx;
+  const c = CHALLENGES[idx];
+  const container = document.getElementById('challengesList');
+  const active = document.getElementById('challengeActive');
+  container.classList.add('hidden');
+  active.classList.remove('hidden');
+
+  let body = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3>${c.type === 'fix' ? '🔧' : c.type === 'build' ? '🏗️' : c.type === 'cyber' ? '🔒' : '🧠'} ${c.title}</h3>
+      <button class="btn btn-ghost" onclick="backToChallenges()">← Back</button>
+    </div>
+    <p style="margin-bottom:12px;color:var(--text-secondary)">${c.desc}<br>${c.descAr}</p>
+  `;
+
+  if (c.type === 'fix' || c.type === 'complete') {
+    body += `<div class="challenge-flow">`;
+    c.flow.forEach((emoji, i) => {
+      if (emoji === '❓') {
+        body += `<div class="challenge-emoji-slot" id="challengeSlot" onclick="showChallengeOptions(${idx})">❓</div>`;
+      } else {
+        body += `<div class="challenge-emoji-slot filled">${emoji}</div>`;
+      }
+    });
+    body += `</div><div id="challengeOptions" class="hidden" style="margin-top:10px"></div>`;
+  } else if (c.type === 'cyber') {
+    body += `<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">`;
+    c.options.forEach(opt => {
+      body += `<button class="btn btn-ghost" style="flex:1;min-width:120px;text-align:center;font-family:var(--font-mono)" onclick="answerChallenge('${opt}',${idx})">${opt}</button>`;
+    });
+    body += `</div>`;
+  } else if (c.type === 'build') {
+    body += `<p style="font-size:0.82rem;color:var(--teal)">💡 Go to the Coding tab, build the flow, then come back to check!<br>💡 اذهب لتبويب البرمجة، ابنِ التدفق، ثم ارجع!</p>
+    <button class="btn btn-gold mt-md" onclick="checkBuildChallenge(${idx})">✅ Check My Flow</button>`;
+  }
+  body += `<div id="challengeResult"></div>`;
+  active.innerHTML = body;
+}
+
+function showChallengeOptions(idx) {
+  const c = CHALLENGES[idx];
+  const options = ['🎯','🔒','🧩','📦','🔁','⚠️'];
+  const container = document.getElementById('challengeOptions');
+  container.classList.remove('hidden');
+  container.innerHTML = '<div style="font-size:0.8rem;margin-bottom:6px">Pick the correct block / اختر البلوك الصحيح:</div>' +
+    options.map(e => `<button class="btn btn-ghost" style="font-size:1.4rem;padding:8px 12px" onclick="answerChallenge('${e}',${idx})">${e}</button>`).join(' ');
+}
+
+function answerChallenge(answer, idx) {
+  const c = CHALLENGES[idx];
+  const result = document.getElementById('challengeResult');
+  if (answer === c.answer) {
+    c.stars = 3;
+    result.innerHTML = `<div class="challenge-result success">🎉 Correct! أحسنت! Bravo! ⭐⭐⭐</div>`;
+    const slot = document.getElementById('challengeSlot');
+    if (slot) { slot.textContent = answer; slot.classList.add('correct'); }
+  } else {
+    result.innerHTML = `<div class="challenge-result fail">❌ Try again! حاول مجدداً! Réessaie!</div>`;
+    const slot = document.getElementById('challengeSlot');
+    if (slot) slot.classList.add('error');
+    setTimeout(() => { if (slot) slot.classList.remove('error'); }, 800);
+  }
+}
+
+function checkBuildChallenge(idx) {
+  const c = CHALLENGES[idx];
+  const result = document.getElementById('challengeResult');
+  const has = c.expected.every(eid => flowBlocks.some(b => b.emojiId === eid));
+  if (has) {
+    c.stars = Math.min(3, Math.max(1, 4 - Math.floor(flowBlocks.length / 3)));
+    result.innerHTML = `<div class="challenge-result success">🎉 Flow looks good! ⭐${'⭐'.repeat(c.stars)}</div>`;
+  } else {
+    result.innerHTML = `<div class="challenge-result fail">❌ Missing blocks: ${c.expected.map(e => {
+      const found = Object.values(EMOJIS).flat().find(em => em.id === e);
+      return found ? found.emoji : e;
+    }).join(' ')}</div>`;
+  }
+}
+
+function backToChallenges() {
+  document.getElementById('challengesList').classList.remove('hidden');
+  document.getElementById('challengeActive').classList.add('hidden');
+  currentChallenge = null;
+  initChallenges();
+}
+
+/* ═══════════════════════════════════════════
+   HELP SECTION
+   ═══════════════════════════════════════════ */
+function initHelp() {
+  const sections = [
+    { id:'dict', label:'📖 Dictionary', labelAr:'القاموس' },
+    { id:'build', label:'🏗️ How to Build', labelAr:'كيف تبني' },
+    { id:'test', label:'✅ Testing', labelAr:'الاختبار' },
+    { id:'safety', label:'🔒 Safety', labelAr:'السلامة' },
+    { id:'local', label:'🏠 Local-First', labelAr:'محلي أولاً' },
+    { id:'trouble', label:'🔧 Troubleshoot', labelAr:'استكشاف' },
+    { id:'path', label:'🗺️ Learning Path', labelAr:'مسار التعلم' },
+  ];
+
+  document.getElementById('helpNav').innerHTML = sections.map((s, i) =>
+    `<button class="help-nav-btn ${i===0?'active':''}" onclick="showHelpSection('${s.id}',this)">${s.label}</button>`
+  ).join('');
+
+  const content = document.getElementById('helpContent');
+  content.innerHTML = `
+    <!-- Dictionary -->
+    <div class="help-section active" id="help-dict">
+      <h3>📖 Emoji Dictionary / قاموس الإيموجي / Dictionnaire</h3>
+      <table class="dict-table">
+        <thead><tr><th>Emoji</th><th>EN</th><th>العربية</th><th>FR</th><th>Category</th></tr></thead>
+        <tbody>
+          ${Object.entries(EMOJIS).map(([cat, emojis]) =>
+            emojis.map(e => `<tr><td class="dict-emoji">${e.emoji}</td><td>${e.en}</td><td>${e.ar}</td><td>${e.fr}</td><td><span class="badge">${cat}</span></td></tr>`).join('')
+          ).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- How to Build -->
+    <div class="help-section" id="help-build">
+      <h3>🏗️ How to Build a Flow / كيف تبني تدفقاً / Comment construire</h3>
+      <p><strong>1.</strong> Drag emojis from the palette to the workspace — اسحب الإيموجي من اللوحة لمساحة العمل</p>
+      <p><strong>2.</strong> Click ⚙️ to configure blocks (set values, conditions) — اضغط ⚙️ لضبط البلوكات</p>
+      <p><strong>3.</strong> Start with ▶️ and end with 🎯 — ابدأ بـ ▶️ وانتهِ بـ 🎯</p>
+      <p><strong>4.</strong> Click ▶️ Run to execute — اضغط ▶️ للتشغيل</p>
+      <p><strong>5.</strong> Watch the 🧾 Log for results — راقب السجل للنتائج</p>
+      <p><strong>6.</strong> Use 🐞 Debug to step through — استخدم 🐞 للمرور خطوة بخطوة</p>
+    </div>
+
+    <!-- Testing -->
+    <div class="help-section" id="help-test">
+      <h3>✅ How to Test / كيف تختبر / Comment tester</h3>
+      <p>Before running, check: / قبل التشغيل، تحقق من:</p>
+      <p>☐ Flow starts with ▶️ — التدفق يبدأ بـ ▶️</p>
+      <p>☐ Flow ends with 🎯 — التدفق ينتهي بـ 🎯</p>
+      <p>☐ Loops have limits (no infinite) — الحلقات لها حد</p>
+      <p>☐ Conditions are set — الشروط محددة</p>
+      <p>☐ Data blocks have values — بلوكات البيانات لها قيم</p>
+      <p>☐ Check 🧾 Log for errors — تحقق من السجل للأخطاء</p>
+    </div>
+
+    <!-- Safety -->
+    <div class="help-section" id="help-safety">
+      <h3>🔒 Safety & Ethics / السلامة والأخلاق / Sécurité et Éthique</h3>
+      <p><strong style="color:var(--green)">✅ What we teach / ما نعلّمه:</strong></p>
+      <p>Defensive thinking, safe simulations, privacy concepts, basic cryptography puzzles, permission awareness</p>
+      <p>التفكير الدفاعي، المحاكاة الآمنة، مفاهيم الخصوصية، ألغاز التشفير الأساسية، الوعي بالأذونات</p>
+      <p style="margin-top:12px"><strong style="color:var(--red)">❌ What we don't / ما لا نعلّمه:</strong></p>
+      <p>No hacking steps, no exploit code, no targeting real systems, no malware</p>
+      <p>لا خطوات اختراق، لا كود استغلال، لا استهداف أنظمة حقيقية</p>
+      <p style="margin-top:12px"><strong style="color:var(--gold)">🕌 Values / القيم:</strong></p>
+      <p>Respectful, clean, beneficial knowledge. No violence, no vulgar content, no occult themes.</p>
+      <p>الاحترام، النظافة، المعرفة النافعة. لا عنف، لا محتوى بذيء، لا مواضيع سحرية.</p>
+    </div>
+
+    <!-- Local First -->
+    <div class="help-section" id="help-local">
+      <h3>🏠 Why Local-First / لماذا محلي أولاً / Pourquoi local d'abord</h3>
+      <p>🔒 <strong>No server</strong> = Your data never leaves your device — بياناتك لا تغادر جهازك</p>
+      <p>👁️ <strong>No tracking</strong> = Nobody watches what you build — لا أحد يراقب ما تبنيه</p>
+      <p>⚡ <strong>No internet needed</strong> = Works offline — يعمل بدون إنترنت</p>
+      <p>💾 <strong>localStorage only</strong> = Data stays in your browser — البيانات في متصفحك فقط</p>
+      <p style="margin-top:8px;color:var(--yellow)">⚠️ If you clear browser data, saved flows are lost! Use Export 📤 for backup.</p>
+      <p style="color:var(--yellow)">⚠️ إذا مسحت بيانات المتصفح، ستفقد التدفقات! استخدم التصدير 📤 للنسخ الاحتياطي.</p>
+    </div>
+
+    <!-- Troubleshooting -->
+    <div class="help-section" id="help-trouble">
+      <h3>🔧 Troubleshooting / استكشاف الأخطاء / Dépannage</h3>
+      <p><strong>Flow won't run?</strong> — Make sure you have at least one block. Check the Log 🧾 for errors.</p>
+      <p><strong>التدفق لا يعمل؟</strong> — تأكد من وجود بلوك واحد على الأقل. تحقق من السجل 🧾.</p>
+      <p style="margin-top:8px"><strong>Can't drag blocks?</strong> — Try clicking the emoji to add it (tap on mobile).</p>
+      <p><strong>لا يمكن سحب البلوكات؟</strong> — جرب النقر على الإيموجي لإضافته.</p>
+      <p style="margin-top:8px"><strong>Saved flows gone?</strong> — Browser data was cleared. Always Export 📤 backups!</p>
+      <p><strong>اختفت التدفقات المحفوظة؟</strong> — تم مسح بيانات المتصفح. صدّر النسخ الاحتياطية دائماً!</p>
+    </div>
+
+    <!-- Learning Path -->
+    <div class="help-section" id="help-path">
+      <h3>🗺️ Learning Path / مسار التعلم / Parcours</h3>
+      <div class="learning-path">
+        <div class="path-node ${currentLevel==='newb'?'current':''}">
+          <div style="font-size:1.5rem">🐣</div>
+          <div>Newb / مبتدئ</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">Basic blocks<br>بلوكات أساسية</div>
+        </div>
+        <div class="path-arrow">→</div>
+        <div class="path-node ${currentLevel==='explorer'?'current':''}">
+          <div style="font-size:1.5rem">🧭</div>
+          <div>Explorer / مستكشف</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">Logic + IoT + Cyber<br>منطق + أجهزة + أمن</div>
+        </div>
+        <div class="path-arrow">→</div>
+        <div class="path-node ${currentLevel==='developer'?'current':''}">
+          <div style="font-size:1.5rem">💻</div>
+          <div>Developer / مطور</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">Full access + code view<br>وصول كامل</div>
+        </div>
+      </div>
+      <p style="margin-top:16px;font-size:0.85rem">To advance: Complete challenges at your level! / للتقدم: أكمل التحديات في مستواك!</p>
+    </div>
+  `;
+}
+
+function showHelpSection(id, btn) {
+  document.querySelectorAll('.help-nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.help-section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('help-' + id).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════
+   KEYBOARD ACCESSIBILITY
+   ═══════════════════════════════════════════ */
+document.addEventListener('keydown', (e) => {
+  // ESC closes modal
+  if (e.key === 'Escape') closeModal();
+  // Space/Enter in debug mode advances
+  if (isDebug && isRunning && (e.key === ' ' || e.key === 'Enter')) {
+    e.preventDefault();
+    executeNext();
+  }
+});
+</script>
+</body>
+</html>
